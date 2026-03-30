@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>我的富途 Stage2 Watch List</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; padding: 20px; }
+    h1 { color: #00ff9d; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+    th { background: #1f1f1f; }
+    .up { color: #00ff9d; }
+    .down { color: #ff3b5c; }
+  </style>
+</head>
+<body>
+  <h1>💼 我的富途 Stage2 Watch List</h1>
+  <p>符合 US_Stage2 條件嘅股票（自動更新）</p>
+  
+  <table id="watchlist">
+    <tr><th>股票</th><th>最新價</th><th>漲跌</th><th>成交額</th></tr>
+  </table>
+
+  <script>
+    async function updateWatchlist() {
+      // 你可以之後再加更多股票
+      const stocks = ["NVDA", "AAPL", "MSFT", "AMZN", "GOOGL", "META", "TSLA"];
+      const table = document.getElementById("watchlist");
+      
+      for (let symbol of stocks) {
+        try {
+          const res = await fetch(`https://quote.futunn.com/v1/quote?code=${symbol}&market=2`);
+          const data = await res.json();
+          if (data.data) {
+            const price = data.data.price;
+            const change = (data.data.changeRate * 100).toFixed(2);
+            const row = `<tr>
+              <td>${symbol}</td>
+              <td>${price}</td>
+              <td class="${change > 0 ? 'up' : 'down'}">${change}%</td>
+              <td>${data.data.turnover}</td>
+            </tr>`;
+            table.innerHTML += row;
+          }
+        } catch(e) {}
+      }
+    }
+
+    // 每10秒自動更新一次
+    setInterval(updateWatchlist, 10000);
+    updateWatchlist();
+  </script>
+</body>
+</html>
